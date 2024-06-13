@@ -25,6 +25,7 @@ lindex = list(dfthe.index)
 lcol = dfthe['structure'].unique()
 loptions = [{'label': str(option), 'value': option} for option in lcol]
 
+card_style = {"width": "100%", "margin": "auto", "padding": "10px", "borderColor": "#d9534f", "borderWidth": "2px"}
 # Card for the warm-up
 card_warm = dbc.Card(
     [
@@ -48,7 +49,7 @@ card_warm = dbc.Card(
     ],
     color="danger",
     outline=True,
-    style={"width": "100%", "margin": "auto", "padding": "10px"}
+    style=card_style
 )
 
 # Data for the reported speech
@@ -56,6 +57,8 @@ dfreport = dithe['reportedsp']
 lindexrep = list(dfreport.index)
 lcolrep = dfreport['story'].unique()
 loptionsrep = [{'label': str(option), 'value': option} for option in lcolrep]
+
+
 
 # Card for the reported
 card_rep = dbc.Card(
@@ -80,7 +83,7 @@ card_rep = dbc.Card(
     ],
     color="danger",
     outline=True,
-    style={"width": "100%", "margin": "auto", "padding": "10px"}
+    style=card_style
 )
 
 # Data for the pictures
@@ -108,7 +111,7 @@ card_pic = dbc.Card(
     ],
     color="danger",
     outline=True,
-    style={"width": "100%", "margin": "auto", "padding": "10px"}
+    style=card_style
 )
 
 # Data for the interrogative challenge
@@ -140,31 +143,82 @@ card_inter = dbc.Card(
     ],
     color="danger",
     outline=True,
-    style={"width": "100%", "margin": "auto", "padding": "10px"}
+    style=card_style
 )
 
 app.layout = dbc.Container([
     dcc.Tabs([
-        dcc.Tab(label='Translation Warm-Up', children=[
+        dcc.Tab(
+            label='Translation Warm-Up', children=[
             dbc.Row([
                 dbc.Col(card_warm, width={'size': 12})
             ], justify='center', align='center')
-        ]),
+            ],
+            selected_style={
+                'backgroundColor': '#d9534f',
+                'color': 'white',
+                'fontWeight': 'bold',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'
+            },
+            style={'backgroundColor': '#f5f5f5',
+                'color': 'black',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'}
+        ),
         dcc.Tab(label='Reported Speech', children=[
             dbc.Row([
                 dbc.Col(card_rep, width={'size': 12})
             ], justify='center', align='center')
-        ]),
+        ],selected_style={
+                'backgroundColor': '#d9534f',
+                'color': 'white',
+                'fontWeight': 'bold',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'
+            },
+            style={'backgroundColor': '#f5f5f5',
+                'color': 'black',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'}),
         dcc.Tab(label='Interrogative Challenge', children=[
             dbc.Row([
                 dbc.Col(card_inter, width={'size': 12})
             ], justify='center', align='center')
-        ]),
+        ],selected_style={
+                'backgroundColor': '#d9534f',
+                'color': 'white',
+                'fontWeight': 'bold',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'
+            },
+            style={'backgroundColor': '#f5f5f5',
+                'color': 'black',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'}),
         dcc.Tab(label='Describe the Pictures', children=[
             dbc.Row([
                 dbc.Col(card_pic, width={'size': 12})
             ], justify='center', align='center')
-        ])
+        ],selected_style={
+                'backgroundColor': '#d9534f',
+                'color': 'white',
+                'fontWeight': 'bold',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'
+            },
+            style={'backgroundColor': '#f5f5f5',
+                'color': 'black',
+                'padding': '5px',
+                'border': '2px solid #d9534f',
+                'borderRadius': '10px'})
     ]),
     dcc.Store(id="didfthe-stored", data=[]),
     dcc.Store(id="diordenadatoday-stored", data=[]),
@@ -272,12 +326,9 @@ def displayClick(btn1, didfreport,diordenadarep):
         direct = row.loc[:, 'direct']
         msg = direct
         diordenadarep = {'last_index': next_index}  # Update state with new index
-        print(diordenadarep)
         last_index = diordenadarep['last_index']
-        print(last_index)
         row = dfreport.iloc[[last_index]]
         dirow = row.to_dict('records')
-
         return html.Div(msg), diordenadarep, dirow
 
 
