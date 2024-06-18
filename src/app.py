@@ -1,9 +1,15 @@
 from dash import html, dcc
 from dash import Dash, Input, Output, State, callback_context, no_update
+from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import random
 import pandas as pd
 import pathlib
+from gtts import gTTS
+import pygame
+import base64
+import io
+
 import openpyxl
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://use.fontawesome.com/releases/v5.15.4/css/all.css"])
@@ -44,6 +50,7 @@ card_warm = dbc.Card(
                 html.Div(id='container-button-timestamp'),
                 dbc.Button('ENGLISH', id='btn-nclicks-2', n_clicks=0, color="primary", className="me-1"),
                 html.Div(id='container-button-timestamp2'),
+                html.Audio(id='tts-audio', controls=True, style={'width': '100%'})
             ],
         )
     ],
@@ -254,6 +261,7 @@ def update_output(selected_options):
     [Output('container-button-timestamp', 'children'),
      Output('diordenadatoday-stored', 'data'),
      Output('container-button-timestamp2', 'children')],
+    Output('tts-audio', 'src'),
     [Input('btn-nclicks-1', 'n_clicks'),
      Input('btn-nclicks-2', 'n_clicks')],
     [State("didfthe-stored", 'data'),
@@ -274,15 +282,58 @@ def display_sentence(btn1, btn2, didfthe, diordenadatoday):
         esp = row.loc[:, 'esp']
         msg = esp
         diordenadatoday = row.to_dict('records')
-        return html.Div(msg), diordenadatoday, ""
+        return html.Div(msg), diordenadatoday, "",""
 
     elif button_id == "btn-nclicks-2":
         row = pd.DataFrame(diordenadatoday)
         eng = row.loc[:, 'eng']
-        return no_update, diordenadatoday, html.Div(eng)
+        speech_text = eng[0]
+        print(speech_text)
 
-    return html.Div(), [], ""
+        # Convert text to speech using gTTS
+        tts = gTTS(text=speech_text, lang='en',tld='ca')
 
+        # Save the audio to a bytes buffer
+        audio_buffer = io.BytesIO()
+        tts.write_to_fp(audio_buffer)
+
+        # Encode the audio in base64
+        audio_base64 = base64.b64encode(audio_buffer.getvalue()).decode('utf-8')
+
+        # Create a data URI for the audio
+        audio_src = f"data:audio/mp3;base64,{audio_base64}"
+        return no_update, diordenadatoday, html.Div(eng), audio_src
+
+    return html.Div(), [], "",""
+
+
+# @app.callback(
+#     Output('tts-audio', 'src'),
+#     Input('btn-tts', 'n_clicks'),
+#     State('container-button-timestamp2', 'children')
+# )
+# def text_to_speech(n_clicks, text):
+#     if n_clicks == 0 or not text:
+#         raise PreventUpdate
+#
+#     # Extract text from the Div component
+#     speech_text = text['props']['children'][0]
+#     print(speech_text)
+#
+#     # Convert text to speech using gTTS
+#     tts = gTTS(text=speech_text, lang='en')
+#
+#     # Save the audio to a bytes buffer
+#     audio_buffer = io.BytesIO()
+#     tts.write_to_fp(audio_buffer)
+#
+#     # Encode the audio in base64
+#     audio_base64 = base64.b64encode(audio_buffer.getvalue()).decode('utf-8')
+#
+#     # Create a data URI for the audio
+#     audio_src = f"data:audio/mp3;base64,{audio_base64}"
+#
+#     return audio_src
 # callbacks for the reported speech
 @app.callback(
     [Output('container-button-timestamp0rep', 'children'),
