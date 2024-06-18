@@ -4,3 +4,6 @@ openpyxl==3.0.10
 pandas==2.0.3
 gunicorn
 dash-tools
+pathlib~=1.0.1
+pygame~=2.5.2
+gtts~=2.5.1
